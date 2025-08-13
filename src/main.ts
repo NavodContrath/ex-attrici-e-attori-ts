@@ -52,4 +52,23 @@ async function getActress(id: number): Promise<Actress | null> {
 
   }
 }
-getActress(5)
+
+async function getAllActresses(): Promise<Actress[]> {
+  try {
+    const response = await fetch(`http://localhost:3333/actresses`)
+    if (!response.ok) {
+      throw new Error(`HTP Error ${response.status}:${response.statusText}`)
+    }
+    const dati: unknown = await response.json()
+    if (Array.isArray(dati)) {
+      return dati.filter(isActress)
+    }
+    return []
+  } catch (errore) {
+    if (errore instanceof Error) {
+      console.log(`Errore durante il recupero dati, ${errore.message}`)
+    }
+    return []
+  }
+}
+
