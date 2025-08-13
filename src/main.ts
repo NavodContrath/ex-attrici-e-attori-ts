@@ -78,3 +78,55 @@ async function getActresses(ids: number[]): Promise<(Actress | null)[]> {
   return dati
 }
 
+async function createActress(nuovaAttrice: Omit<Actress, "id">): Promise<Actress | null> {
+  try {
+    const response = await fetch(`http://localhost:3333/actresses`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(nuovaAttrice)
+    })
+    if (!response.ok) {
+      throw new Error(`HTP Error ${response.status}:${response.statusText}`)
+    }
+    const dati: unknown = await response.json()
+
+    if (isActress(dati)) {
+      return dati
+    }
+    throw new Error('Formato dei dati non valido')
+
+  } catch (errore) {
+    if (errore instanceof Error) {
+      console.log(`Errore durante il recupero dati, ${errore.message}`)
+    }
+    return null
+  }
+}
+
+async function updateActress(id: number, attriceAggiornata: Partial<Omit<Actress, "id" | "name">>): Promise<Actress | null> {
+  try {
+    const response = await fetch(`http://localhost:3333/actresses/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(attriceAggiornata)
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+    }
+    const dati: unknown = await response.json()
+
+    if (!isActress(dati)) {
+      throw new Error('Formato dei dati non valido')
+    }
+    console.log(dati)
+    return dati
+  } catch (errore) {
+    if (errore instanceof Error) {
+      console.log(`Errore durante il recupero dati, ${errore.message}`)
+    }
+    return null
+
+  }
+
+}
+
